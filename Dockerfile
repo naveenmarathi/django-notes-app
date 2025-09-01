@@ -1,20 +1,19 @@
-FROM python:3.9
+FROM python:3.9-slim
 
-WORKDIR /app/backend
+# Set working directory
+WORKDIR /app
 
-COPY requirements.txt /app/backend
+# Copy requirements first (for caching)
+COPY requirements.txt .
 
-RUN apt-get update \
-    && apt-get upgrade -y \
-    && apt-get install -y gcc default-libmysqlclient-dev pkg-config \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN pip install mysqlclient
+# Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . /app/backend
+# Copy project files
+COPY . .
 
+# Expose port 8000
 EXPOSE 8000
 
-# ✅ Run Django app
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# Run Django
+CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
